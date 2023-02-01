@@ -19,17 +19,7 @@ controlling_cam = 1
 claw = "Open"
 controlling_camera_one = True
 cam_status = ["Center", "Center"]
-# address = ('169.254.9.25', 80)
-# client_socket = socket(AF_INET, SOCK_DGRAM)
-#client_socket.bind(('169.254.168.151', '80'))
 print("socket setup complete")
-
-def crossCheck(msg, lastSent):
-    if lastSent != "" and abs(float(msg[2:])) > 0.1 and abs(float(lastSent)) > 0.1:
-        if abs(abs(float(msg[2:])) - abs(float(lastSent))) < 0.05:
-            return False
-    return True
-
 
 def crossCheck(msg, lastSent):
     if lastSent != "" and abs(float(msg[2:])) > 0.1 and abs(float(lastSent)) > 0.1:
@@ -49,23 +39,7 @@ def message(msg, latest):
         print(str(msg + "x"))
         return str(msg[2:])
     else:
-        # print("Cancelled", msg)
         return str(latest[2:])
-    #ser.close()
-    # msg = msg[0] + " " + str(round(float(msg[2:]), 3))
-    
-    # if(crossCheck(msg, latest) == True):
-    #     client_socket.sendto(str.encode(msg), address)
-    #     print("Sending", msg)
-    #     return str(msg[2:])
-    # else:
-    #     print("Cancelled", msg)
-    #     return str(latest[2:])
-    
-   # rec_data, addr = client_socket.recvfrom(2048)  # Read response from arduino
-    
-    #rec_string = rec_data.decode('utf-8')
-    #print("Recieved", rec_string)  # Print the response from Arduino
 
 # This is a simple class that will help us print to the screen.
 # It has nothing to do with the joysticks, just outputting the
