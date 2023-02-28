@@ -30,6 +30,10 @@ import sys
 import pygame
 from pygame.locals import *
 
+def to_weng_format(matrix):
+    return ",".join(str(x) for x in matrix) + ",x"
+
+
 def translate_vector(vector):
     linearX = vector[0]
     linearY = vector[1]
@@ -69,7 +73,7 @@ def translate_vector(vector):
         T[i] = t / max_motor * max_input
     
     # Multiply by 1000 to convert to ints
-    return [int(x * 1000) for x in T]
+    return T
     
     
 
@@ -268,6 +272,7 @@ class input_test(object):
                     # print axes
                     print("Axes: " + str(axes))
                     print("Calculated vectors: " + str(translate_vector(axes)))
+                    print("Weng format: " + str(to_weng_format(translate_vector(axes))))
 
 
                 except Exception as e:
