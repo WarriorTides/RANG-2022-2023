@@ -12,35 +12,39 @@ def closest(lst, K):
 
 def motors(arr):
     cnt = 0
-    for i in arr:
+    for i in range(len(arr)):
         if arr[i] != 0:
             cnt += 1
     return cnt
 # formula: (x / t) * r
-def power(arr):
+def power_calculate(arr):
     x = 20 # amp limit
     t = motors(arr) # total number of motors running
 
-    df = pd.read_excel(r"C:\\Users\\ISS\Downloads\datasheetT200Thruster.xlsx")
+    df = pd.read_excel(r"./datasheetT200Thruster.xlsx")
     # get data
     pwn = df.iloc[:, 0].tolist() # pwn colunmn
     current = df.iloc[:, 2].tolist() # current colunmn
 
     sum = 0
-    for i in arr:
+    for i in range(len(arr)):
         sum += abs(arr[i])
 
     out = []
     for i in range(len(arr)):
         
         r = abs(arr[i])
-        amp = r / sum
+        if (sum == 0):
+            out.append(1500)
+            continue
         if r == 0:
             out.append(1500)
             continue
+        amp = r / sum
+
         try:
             idx = current.index(amp)
-            pwnCur = current[idx]
+            pwnCur = pwn[idx]
             if arr[i] < 0:
                 out.append(pwnCur * (-1)) 
             else:
@@ -56,5 +60,8 @@ def power(arr):
 
     return out
 
-print(power([1,1,1,1,0,0]))
+if __name__ == "__main__":
+    arr = [-0.12158574175237281, 0.0, 0.0, 0.12158574175237281, 0.0, 0.0]
+    print(power_calculate(arr))
+
 

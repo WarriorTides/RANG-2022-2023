@@ -10,6 +10,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
+from power_calc import power_calculate
 
 # I see no reason to disable screensaver for this tool.
 os.environ["SDL_VIDEO_ALLOW_SCREENSAVER"] = "1"
@@ -23,12 +24,15 @@ os.environ["SDL_JOYSTICK_ALLOW_BACKGROUND_EVENTS"] = "1"
 # compositing is known to cause issues on KDE/KWin/Plasma/X11 on Linux.
 os.environ["SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR"] = "0"
 
-THRUSTERS_ENABLED = False
+THRUSTERS_ENABLED = True
 DEADZONES = [0.1, 0.1, 0.1, 0.1]
+SEND_SERIAL = False
 
 import sys
 import pygame
 from pygame.locals import *
+import serial
+
 
 def to_weng_format(matrix):
     return ",".join(str(x) for x in matrix) + ",x"
@@ -269,11 +273,20 @@ class input_test(object):
                             print("Deadzone triggered for axis " + str(i))
                             axes[i] = 0.0
 
-                    # print axes
-                    print("Axes: " + str(axes))
-                    print("Calculated vectors: " + str(translate_vector(axes)))
-                    print("Weng format: " + str(to_weng_format(translate_vector(axes))))
 
+                    translatedVectors = translate_vector(axes)
+                    calculatedPower = power_calculate(translatedVectors)
+                    serialData = to_weng_format(calculatedPower)
+
+                    if not THRUSTERS_ENABLED:
+                        serialData = to_weng_format([0.0] * 6)
+                    print("Axes: " + str(axes))
+                    print("Calculated vectors: " + str(translatedVectors))
+                    print("Calculated power levels: " + str(calculatedPower))
+                    print("Serial data: " + str(serialData))
+
+                    if SEND_SERIAL:
+                        ser.write(serialData.encode())
 
                 except Exception as e:
                     #print("Error in event handler")
@@ -413,6 +426,17 @@ class input_test(object):
 
 
 if __name__ == "__main__":
+    global ser
+    serialport = None
+    if len(sys.argv) > 1:
+        serialport = sys.argv[1]
+    
+    if SEND_SERIAL:
+        # Initalize the serial
+        ser = serial.Serial(serialport, 115200, timeout=0.1)
+        ser.flushInput()
+
+    # Initalize the pygame
     program = input_test()
     program.init()
     program.run()  # This function should never return
