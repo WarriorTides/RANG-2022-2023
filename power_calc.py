@@ -16,6 +16,7 @@ def motors(arr):
         if arr[i] != 0:
             cnt += 1
     return cnt
+
 # formula: (x / t) * r
 def power_calculate(arr):
     x = 20 # amp limit
